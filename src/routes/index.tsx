@@ -1,17 +1,18 @@
 import React from 'react';
 import routes from './routeNames';
 import Login from '../screens/login';
+import Signup from '../screens/signup';
+import {StatusBar} from 'react-native';
 import SplashScreen from '../screens/splashscreen';
-import TermsAndCondition from '../screens/termsAndCondition';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ChoosePassword from '../screens/login/choosePassword';
 
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
   return (
     <NavigationContainer>
+      <StatusBar hidden />
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -23,9 +24,8 @@ export default function Routes() {
           name={routes.splash}
           component={SplashScreen}
         />
-        <Stack.Screen name={routes.termsAndCondition} component={TermsAndCondition} />
         <Stack.Screen name={routes.login} component={Login} />
-        <Stack.Screen name={routes.password} component={ChoosePassword} />
+        <Stack.Screen name={routes.signup} component={Signup} />
       </Stack.Navigator>
     </NavigationContainer>
   );

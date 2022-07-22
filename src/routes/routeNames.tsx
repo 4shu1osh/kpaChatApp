@@ -1,8 +1,8 @@
 const routes = {
     login: 'Login',
+    signup: 'Signup',
     password: 'Password',
     splash: 'SplashScreen',
-    termsAndCondition: 'TermsAndCondition',
 }
 
 export default routes;

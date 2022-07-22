@@ -1,6 +1,6 @@
 import React from 'react';
 import colors from '../../utils/colors';
-import {vh, vw} from '../../utils/dimensions';
+import {vh} from '../../utils/dimensions';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 const CustomButton = ({buttonHandler, label, widthPercent}: any) => {
@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: vh(16),
     justifyContent: 'center',
-    backgroundColor: colors.teal_green,
+    backgroundColor: colors.green,
   },
 });

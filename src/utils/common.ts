@@ -1,23 +1,31 @@
 const strings = {
   next: 'next',
+  sign_in: 'Sign in',
+  sign_up: 'Sign up',
   password: 'Password',
+  full_name: 'Full Name',
   email_phone: 'Email/Phone',
   agree: 'Agree and continue',
   invalid_email: 'Invalid email',
-  login_text: 'Enter your phone/email',
+  invalid_name: 'Invalid name',
   login_password: 'Enter your password',
-  invalid_password: 'Invalid password',
-  invalid_phone: 'Invalid phone number',
   welcome_message: 'Welcome to KPA Chat',
-  enter_password: 'Password can\'t be empty',
-  enter_phone_email: 'Phone/email can\'t be empty',
-  password_no_space: 'Password can\'t contain spaces',
+  enter_password: "Password can't be empty",
+  dont_have_account: 'Don\'t have an account?',
+  enter_phone_email: "Phone/email can't be empty",
+  invalid_phone: 'Phone number must be 10 digits',
+  already_have_account: 'Already have an account?',
+  password_no_space: "Password can't contain spaces",
+  login_text: 'Sign In Using Your  Mobile Number / Email',
   password_length: 'Password must be at least 8 characters',
   password_number: 'Password must contain at least one number',
   password_special: 'Password must contain at least one special character',
   password_uppercase: 'Password must contain at least one uppercase letter',
+  data_charges: 'KPA Chat will verify your email/phone. Standard charges may apply.',
   privacy_policy:
     'Read our Privacy Policy. Tap "Agree and continue" to accept the Terms and Services',
+  invalid_password:
+    'Password must be at least 8 characters long, contain at least one number, one uppercase letter and one special character',
 };
 
 const toUpperCase = (str: string) => {
