@@ -1,7 +1,7 @@
 import React from 'react';
-import colors from '../../utils/colors';
 import {vh} from '../../utils/dimensions';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import Colors from '../../utils/colors';
 
 const CustomButton = ({buttonHandler, label, widthPercent}: any) => {
   return (
@@ -18,14 +18,14 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   text: {
-    color: colors.black,
+    color: Colors.white,
   },
   button: {
     height: vh(40),
     borderRadius: 6,
     alignItems: 'center',
-    marginVertical: vh(16),
+    marginVertical: vh(26),
     justifyContent: 'center',
-    backgroundColor: colors.green,
+    backgroundColor: Colors.green,
   },
 });

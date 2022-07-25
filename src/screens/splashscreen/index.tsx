@@ -4,12 +4,12 @@ import routes from '../../routes/routeNames';
 import {vh, vw} from '../../utils/dimensions';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {
+  Text,
+  View,
   Image,
   Animated,
   Dimensions,
   StyleSheet,
-  View,
-  Text,
 } from 'react-native';
 import Colors from '../../utils/colors';
 
@@ -37,21 +37,24 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-     <Animated.Text style={[styles.txt, {
-      opacity: fadeAnim,
-      transform: [
-        {
-          translateX: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [-50, 0],
-          }),
-        },
-      ],
-
-     }]}>
-       {"Say More."}
+      <Animated.Text
+        style={[
+          styles.txt,
+          {
+            opacity: fadeAnim,
+            transform: [
+              {
+                translateX: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-50, 0],
+                }),
+              },
+            ],
+          },
+        ]}>
+        {'Say More.'}
       </Animated.Text>
-   
+
       <Animated.View style={{opacity: fadeAnim}}>
         <Image
           source={images.chatsplash}
@@ -59,28 +62,27 @@ const SplashScreen = () => {
           resizeMode={'contain'}
         />
       </Animated.View>
-      <Animated.Text style={[styles.txt, {
-      opacity: fadeAnim,
-      transform: [
-        {
-          translateX: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [50, 0],
-          }),
-        },
-      ],
-
-     }]}>
-       {"Do More."}
+      <Animated.Text
+        style={[
+          styles.txt,
+          {
+            opacity: fadeAnim,
+            transform: [
+              {
+                translateX: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [50, 0],
+                }),
+              },
+            ],
+          },
+        ]}>
+        {'Do More.'}
       </Animated.Text>
-    <View style={styles.footer}>
-    <Text style={styles.logoText}>
-        {"K P A - C H A T"}
-      </Text>
-      <Text style={styles.copyright}>
-        {"©2022. All rights reserved."}
-      </Text>
-    </View>
+      <View style={styles.footer}>
+        <Text style={styles.logoText}>{'K P A - C H A T'}</Text>
+        <Text style={styles.copyright}>{'©2022. All rights reserved.'}</Text>
+      </View>
     </View>
   );
 };
@@ -118,5 +120,5 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 100,
-  }
+  },
 });

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Dimensions,
   ToastAndroid,
-  ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import Colors from '../../utils/colors';
@@ -17,7 +16,11 @@ import {useNavigation} from '@react-navigation/native';
 import {strings, toUpperCase} from '../../utils/common';
 import CustomTextInput from '../../components/textInput';
 import TouchableImage from '../../components/touchableImage';
-import {validateEmail, validatePhone, validatePassword} from '../../utils/validation';
+import {
+  validateEmail,
+  validatePhone,
+  validatePassword,
+} from '../../utils/validation';
 import ScreenHeading from '../../components/screenHeading';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -32,7 +35,6 @@ const Login = () => {
   const [phone, setPhone] = React.useState('');
   const [toggle, setToggle] = React.useState(true);
   const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
@@ -89,32 +91,39 @@ const Login = () => {
     } else if (password.includes(' ')) {
       showToast(strings.password_no_space);
       return;
-    } else if (passwordError.length > 0) {
+    } else if (passwordError.length > 20) {
+      showToast(strings.password_max_length);
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
   };
 
   const onPressSignUp = () => {
     navigation.navigate(routes.signup);
-  }
+  };
 
   return (
-      <View style={styles.parent}>
-        <ScreenHeading heading={toUpperCase(strings.sign_in)} />
-      <KeyboardAwareScrollView extraScrollHeight={120} contentContainerStyle={styles.container}>
+    <View style={styles.parent}>
+      <ScreenHeading heading={toUpperCase(strings.welcome)} />
+      <KeyboardAwareScrollView bounces={false} bouncesZoom={false} extraScrollHeight={80} contentContainerStyle={styles.container}>
         <Image
-        source={images.loginbg}
-        style={styles.background}
-        resizeMode="contain"
+          source={images.loginbg}
+          style={styles.background}
+          resizeMode="contain"
         />
         <View style={styles.header}>
           <CustomTextInput
+            maxLength = {phone?.length > 0 ? 10 : null}
             inputCallback={inputCallback}
             placeholder={strings.email_phone}
+            right={
+              <Image
+                source={
+                  phone ? images.dialpad : email ? images.email : null
+                }
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            }
           />
           {phone.length > 0 ? (
             <Text style={styles.error}>{phoneError}</Text>
@@ -122,20 +131,17 @@ const Login = () => {
             <Text style={styles.error}>{emailError}</Text>
           )}
           <CustomTextInput
-          secureTextEntry={toggle}
-          inputCallback={passwordCallback}
-          placeholder={strings.password}
-        />
+            secureTextEntry={toggle}
+            inputCallback={passwordCallback}
+            placeholder={strings.password}
+          />
 
-        <TouchableImage
-          onPress={toggleBtn}
-          source={toggle ? images.eye_close : images.eye_open}
-          style={styles.eye}
-        />
-        {passwordError && (
-          <Text style={styles.error}>{passwordError}</Text>
-        )}
-          {loading && <ActivityIndicator size="large" color={Colors.green} />}
+          <TouchableImage
+            onPress={toggleBtn}
+            source={toggle ? images.eye_close : images.eye_open}
+            style={styles.eye}
+          />
+          {passwordError && <Text style={styles.error}>{passwordError}</Text>}
         </View>
         <CustomButton
           widthPercent={'24%'}
@@ -144,12 +150,14 @@ const Login = () => {
         />
         <Text style={styles.signUpText}>
           {strings.dont_have_account}
-          <Text onPress={onPressSignUp} style={[styles.signUpText, {color: Colors.green}]}>
-            {" "+strings.sign_up}
+          <Text
+            onPress={onPressSignUp}
+            style={[styles.signUpText, {color: Colors.green, textDecorationLine: 'underline'}]}>
+            {' ' + strings.sign_up}
           </Text>
         </Text>
       </KeyboardAwareScrollView>
-      </View>
+    </View>
   );
 };
 
@@ -160,14 +168,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  background:{
+  background: {
     width: width,
     marginBottom: 20,
-    height: height/3,
+    height: height / 3,
   },
   container: {
-    padding: 20,
+    height: height,
     alignItems: 'center',
+    paddingHorizontal: 20,
     backgroundColor: Colors.white,
   },
   login_background: {
@@ -198,7 +207,7 @@ const styles = StyleSheet.create({
     marginBottom: vh(20),
   },
   eye: {
-    bottom: vh(32),
+    bottom: vh(29),
     left: vw(120),
     width: vw(20),
     height: vh(20),
@@ -207,7 +216,11 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 14,
-    marginTop: vh(30),
+    marginTop: vh(68),
     color: Colors.grey,
-  }
+  },
+  icon: {
+    width: vw(20),
+    height: vh(20),
+  },
 });

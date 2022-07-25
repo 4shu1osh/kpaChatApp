@@ -10,6 +10,7 @@ const Colors = {
   teal_green: '#74F2CE',
   dark_green: '#0D2628',
   light_brown: '#D9CAB3',
+  transparent: 'transparent',
 };
 
 export default Colors;

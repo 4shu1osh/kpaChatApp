@@ -17,15 +17,15 @@ export default ScreenHeading;
 
 const styles = StyleSheet.create({
   container: {
-    height: 80,
+    height: 66,
     width: '100%',
     alignItems: 'center',
     backgroundColor: Colors.white,
   },
   notch: {
-    height: 30,
+    height: 26,
     width: '40%',
-    alignItems:'center',
+    alignItems: 'center',
     borderBottomLeftRadius: 56,
     borderBottomRightRadius: 56,
     backgroundColor: Colors.green,
@@ -38,9 +38,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.green,
   },
   heading: {
-    bottom: 10,
-    fontSize: 26,
-    fontWeight: '900',
+    bottom: 6,
+    fontSize: 20,
     color: Colors.white,
   },
 });

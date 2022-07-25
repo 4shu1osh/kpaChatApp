@@ -1,6 +1,6 @@
 import React from 'react';
 import colors from '../../utils/colors';
-import {vh} from '../../utils/dimensions';
+import {vh, vw} from '../../utils/dimensions';
 import {View, TextInput, StyleSheet, Animated} from 'react-native';
 
 const CustomTextInput = (props: any) => {
@@ -12,7 +12,7 @@ const CustomTextInput = (props: any) => {
   console.log(input);
   const value = React.useState(new Animated.Value(0))[0];
 
-  const {placeholder, inputCallback, secureTextEntry} = props;
+  const {placeholder, inputCallback, secureTextEntry, right, maxLength} = props;
 
   const _onFocus = () => {
     setIsFocused(true);
@@ -45,6 +45,7 @@ const CustomTextInput = (props: any) => {
         onBlur={_onBlur}
         onFocus={_onFocus}
         style={styles.input}
+        maxLength={maxLength}
         onChangeText={_onChangeText}
         secureTextEntry={secureTextEntry}
         placeholderTextColor={colors.green}
@@ -79,6 +80,12 @@ const CustomTextInput = (props: any) => {
         ]}>
         {placeholder}
       </Animated.Text>
+      {
+        right && 
+        <View style={styles.rightComponent}>
+          {right}
+        </View>
+      }
     </View>
   );
 };
@@ -91,19 +98,19 @@ const styles = StyleSheet.create({
     height: vh(60),
     borderWidth: 1,
     borderRadius: 6,
-    marginVertical: 10,
-    color: colors.black,
-    marginHorizontal: 16,
     alignSelf: 'center',
-    paddingHorizontal: 10,
+    color: colors.black,
+    marginVertical: vh(10),
+    marginHorizontal: vw(16),
+    paddingHorizontal: vw(14),
     borderColor: colors.green,
   },
   container: {
     width: '100%',
   },
   txt: {
-    left: 46,
-    bottom: 22,
+    left: vw(40),
+    bottom: vh(22),
     fontSize: 12,
     color: colors.green,
     alignSelf: 'center',
@@ -111,4 +118,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
     backgroundColor: colors.white,
   },
+  rightComponent: {
+    right: vw(26),
+    bottom: vh(30),
+    position: 'absolute',
+  }
 });

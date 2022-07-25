@@ -4,9 +4,7 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  ScrollView,
   ToastAndroid,
-  ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import Colors from '../../utils/colors';
@@ -39,14 +37,12 @@ const Signup = () => {
   const [toggle, setToggle] = React.useState(true);
   const [fullName, setFullName] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
   const [nameError, setNameError] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
 
   const inputCallback = (text: any) => {
-
     if (isFinite(text)) {
       setPhone(text);
       setEmail('');
@@ -66,22 +62,25 @@ const Signup = () => {
 
   const nameCallback = (text: any) => {
     setFullName(text);
-    if (fullName.length === 0 || text.length === 0) {   
-        setNameError('');
+    if (fullName.length === 0 || text.length === 0) {
+      setNameError('');
     }
     if (validateName(text)) {
-        setNameError('');
+      setNameError('');
     } else setNameError(strings.invalid_name);
-    }
+  };
 
   const passwordCallback = (text: any) => {
     setPassword(text);
     if (password.length === 0 || text.length === 0) {
       setPasswordError('');
     }
-    if (validatePassword(text)) {
+     else if (validatePassword(text)) {
       setPasswordError('');
-    } else setPasswordError(strings.invalid_password);
+    } else if (password.length > 20) {
+      showToast(strings.password_max_length);
+    }
+    else setPasswordError(strings.invalid_password);
   };
 
   const toggleBtn = () => {
@@ -110,21 +109,21 @@ const Signup = () => {
       return;
     } else if (passwordError.length > 0) {
       return;
-    }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    }else if (password.length > 20) {
+      showToast(strings.password_max_length);
+      return;
   };
-
+  }
   const onPressSignIn = () => {
     navigation.navigate(routes.login);
   };
 
   return (
     <View style={styles.parent}>
-      <ScreenHeading heading={toUpperCase(strings.sign_up)} />
-      <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+      <ScreenHeading heading={toUpperCase(strings.register)} />
+      <KeyboardAwareScrollView
+        extraHeight={80}
+        contentContainerStyle={styles.container}>
         <Image
           source={images.signup}
           style={styles.background}
@@ -144,6 +143,14 @@ const Signup = () => {
           <CustomTextInput
             inputCallback={inputCallback}
             placeholder={strings.email_phone}
+            right={
+              <Image
+                source={phone ? images.dialpad : email ? images.email : null}
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            }
+            maxLength={ phone?.length >  0 ? 10 : null}
           />
           {phone.length > 0 ? (
             <Text style={styles.error}>{phoneError}</Text>
@@ -152,8 +159,8 @@ const Signup = () => {
           )}
           <CustomTextInput
             secureTextEntry={toggle}
-            inputCallback={passwordCallback}
             placeholder={strings.password}
+            inputCallback={passwordCallback}
           />
 
           <TouchableImage
@@ -162,7 +169,6 @@ const Signup = () => {
             style={styles.eye}
           />
           {passwordError && <Text style={styles.error}>{passwordError}</Text>}
-          {loading && <ActivityIndicator size="large" color={Colors.green} />}
         </View>
         <CustomButton
           widthPercent={'24%'}
@@ -173,7 +179,7 @@ const Signup = () => {
           {strings.already_have_account}
           <Text
             onPress={onPressSignIn}
-            style={[styles.signinText, {color: Colors.green}]}>
+            style={[styles.signinText, {color: Colors.green, textDecorationLine: 'underline'}]}>
             {' ' + strings.sign_in}
           </Text>
         </Text>
@@ -196,6 +202,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
+    height: height,
     alignItems: 'center',
     backgroundColor: Colors.white,
   },
@@ -217,7 +224,7 @@ const styles = StyleSheet.create({
   },
 
   eye: {
-    bottom: vh(28),
+    bottom: vh(30),
     left: vw(120),
     width: vw(20),
     height: vh(20),
@@ -226,7 +233,11 @@ const styles = StyleSheet.create({
   },
   signinText: {
     fontSize: 14,
-    marginTop: vh(30),
+    marginTop: vh(65),
     color: Colors.grey,
+  },
+  icon: {
+    width: vw(20),
+    height: vh(20),
   },
 });
