@@ -1,5 +1,59 @@
 import Auth from '@react-native-firebase/auth';
 
+/** * 
+ * @function createUserWithEmailAndPassword
+ * @description Create user with email and password
+ * 
+ * @param email 
+ * @param password 
+ * @param successCallback 
+ * @param failureCallback 
+ */
+
+function createUserWithEmail(
+  email: any,
+  password: any,
+  successCallback: any,
+  failureCallback: any,
+) {
+    Auth().createUserWithEmailAndPassword(email, password)
+    .then((confirmation: any) => {
+      successCallback(confirmation);
+    })
+    .catch((error: any) => {
+      console.log(error.code);
+      failureCallback(authErrorHandling(error.code));
+    });
+};
+
+
+/** * 
+ * @function signInWithEmail
+ * @description Sign In user with email and password
+ * 
+ * @param email 
+ * @param password 
+ * @param successCallback 
+ * @param failureCallback 
+ */
+
+ function signInWithEmail(
+  email: any,
+  password: any,
+  successCallback: any,
+  failureCallback: any,
+) {
+    Auth().signInWithEmailAndPassword(email, password)
+    .then((confirmation: any) => {
+      successCallback(confirmation);
+    })
+    .catch((error: any) => {
+      console.log(error.code);
+      failureCallback(authErrorHandling(error.code));
+    });
+};
+
+
 /**
  * @function logInWithPhoneNumber
  * @description Log in via phone number
@@ -39,6 +93,24 @@ function confirmCode(
     });
 }
 
+
+/**
+ * @function logOut
+ * @description Log out user
+ * @param {*} successCallback
+ * @param {*} failureCallback
+ * 
+ */
+
+ function logOut(successCallback: any, failureCallback: any) {
+  Auth().signOut()
+    .then(successCallback)
+    .catch((error: any) => {  
+      console.log(error.code);
+      failureCallback(authErrorHandling(error.code));
+    });
+  }
+
 /**
  * @function authErrorHandling
  * @description Error handling for log in and sign up methods
@@ -65,6 +137,9 @@ const authErrorHandling = (errorMsg: string) => {
 };
 
 export default {
+  logOut,
   confirmCode,
+  signInWithEmail,
+  createUserWithEmail,
   logInWithPhoneNumber,
 };

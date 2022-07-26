@@ -12,13 +12,22 @@ const validatePassword = (password: string) => {
   );
 };
 
+const validateConfirmPassword = (password: string, confirmPassword: string) => {
+  return password === confirmPassword;
+};
+
 const validatePhone = (phone: number) => {
   return String(phone).match(/^\d{10}$/);
 };
 
 const validateName = (name: string) => {
   return String(name).match(/^[a-zA-Z ]+$/);
-}
+};
 
-
-export {validateEmail, validatePassword, validatePhone, validateName};
+export {
+  validateName,
+  validateEmail,
+  validatePhone,
+  validatePassword,
+  validateConfirmPassword,
+};

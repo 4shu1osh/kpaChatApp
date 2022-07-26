@@ -12,7 +12,7 @@ import routes from '../../routes/routeNames';
 import images from '../../utils/localImages';
 import {vh, vw} from '../../utils/dimensions';
 import CustomButton from '../../components/button';
-import {useNavigation} from '@react-navigation/native';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 import {strings, toUpperCase} from '../../utils/common';
 import CustomTextInput from '../../components/textInput';
 import TouchableImage from '../../components/touchableImage';
@@ -21,9 +21,12 @@ import {
   validateEmail,
   validatePhone,
   validatePassword,
+  validateConfirmPassword,
 } from '../../utils/validation';
 import ScreenHeading from '../../components/screenHeading';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import commonFunction from '../../utils/commonFunction';
+import { setUserDataAsync } from '../../utils/storage';
 
 const {width, height} = Dimensions.get('screen');
 const showToast = (msg: string) => {
@@ -34,13 +37,16 @@ const Signup = () => {
 
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
-  const [toggle, setToggle] = React.useState(true);
+  const [toggle1, setToggle1] = React.useState(true);
+  const [toggle2, setToggle2] = React.useState(true);
   const [fullName, setFullName] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [nameError, setNameError] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState('');
 
   const inputCallback = (text: any) => {
     if (isFinite(text)) {
@@ -74,21 +80,40 @@ const Signup = () => {
     setPassword(text);
     if (password.length === 0 || text.length === 0) {
       setPasswordError('');
-    }
-     else if (validatePassword(text)) {
+    } else if (validatePassword(text)) {
       setPasswordError('');
     } else if (password.length > 20) {
       showToast(strings.password_max_length);
-    }
-    else setPasswordError(strings.invalid_password);
+    } else setPasswordError(strings.invalid_password);
   };
 
-  const toggleBtn = () => {
-    setToggle(!toggle);
+  const confirmPasswordCallback = (text: any) => {
+    setConfirmPassword(text);
+    if (confirmPassword.length === 0 || text.length === 0) {
+      setConfirmPasswordError('');
+    }
+    if (!validateConfirmPassword(text, password)) {
+      setConfirmPasswordError(strings.password_not_match);
+    }
+    if (validateConfirmPassword(text, password)) {
+      setConfirmPasswordError('');
+    }
+
+  }
+
+  const toggleBtn1 = () => {
+    setToggle1(!toggle1);
   };
+
+  const toggleBtn2 = () => {
+    setToggle2(!toggle2);
+  }
 
   const buttonHandler = () => {
-    if (!phone && !email) {
+    if (!fullName) {
+      showToast(strings.enter_phone_email);
+      return;
+    } else if (!phone && !email) {
       showToast(strings.enter_phone_email);
       return;
     } else if (phoneError) {
@@ -97,8 +122,7 @@ const Signup = () => {
     } else if (emailError) {
       showToast(strings.invalid_email);
       return;
-    }
-    if (!password) {
+    } else if (!password) {
       showToast(strings.enter_password);
       return;
     } else if (password.length < 8) {
@@ -107,13 +131,33 @@ const Signup = () => {
     } else if (password.includes(' ')) {
       showToast(strings.password_no_space);
       return;
-    } else if (passwordError.length > 0) {
-      return;
-    }else if (password.length > 20) {
+    }  else if (password.length > 20) {
       showToast(strings.password_max_length);
       return;
+    } else if (!validateConfirmPassword(password, confirmPassword)) {
+      showToast(strings.password_not_match);
+    } else {
+      commonFunction.createUserWithEmail(
+        email,
+        password,
+        (success : any) => {
+          console.log("success",success)
+          setUserDataAsync({uid : success?.user?._user?.uid, email: success?.user?._user?.email});
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: routes.chatStack}],
+            }),
+          );
+        },
+        (error : any) => {
+          console.log("error",error)
+        }
+  
+      )
+    }
   };
-  }
+
   const onPressSignIn = () => {
     navigation.navigate(routes.login);
   };
@@ -122,7 +166,9 @@ const Signup = () => {
     <View style={styles.parent}>
       <ScreenHeading heading={toUpperCase(strings.register)} />
       <KeyboardAwareScrollView
-        extraHeight={80}
+        extraScrollHeight={40}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.container}>
         <Image
           source={images.signup}
@@ -150,7 +196,7 @@ const Signup = () => {
                 resizeMode="contain"
               />
             }
-            maxLength={ phone?.length >  0 ? 10 : null}
+            maxLength={phone?.length > 0 ? 10 : null}
           />
           {phone.length > 0 ? (
             <Text style={styles.error}>{phoneError}</Text>
@@ -158,17 +204,41 @@ const Signup = () => {
             <Text style={styles.error}>{emailError}</Text>
           )}
           <CustomTextInput
-            secureTextEntry={toggle}
+            secureTextEntry={toggle1}
             placeholder={strings.password}
             inputCallback={passwordCallback}
+            right={
+              <TouchableImage
+              style={styles.icon}
+              resizeMode="contain"
+              onPress={toggleBtn1}
+              source={toggle1 ? images.eye_close : images.eye_open}
+              />
+            }
           />
-
-          <TouchableImage
-            onPress={toggleBtn}
-            source={toggle ? images.eye_close : images.eye_open}
-            style={styles.eye}
+          {passwordError ? (
+            <Text style={styles.error}>{passwordError}</Text>
+          ) : (
+            <Text style={styles.error}>{}</Text>
+          )}
+          <CustomTextInput
+            secureTextEntry={toggle2}
+            placeholder={strings.confirm_password}
+            inputCallback={confirmPasswordCallback}
+            right={
+              <TouchableImage
+              style={styles.icon}
+              resizeMode="contain"
+              onPress={toggleBtn2}
+              source={toggle2 ? images.eye_close : images.eye_open}
+              />
+            }
           />
-          {passwordError && <Text style={styles.error}>{passwordError}</Text>}
+          {confirmPasswordError ? (
+            <Text style={styles.error}>{confirmPasswordError}</Text>
+          ) : (
+            <Text style={styles.error}>{}</Text>
+          )}
         </View>
         <CustomButton
           widthPercent={'24%'}
@@ -179,7 +249,10 @@ const Signup = () => {
           {strings.already_have_account}
           <Text
             onPress={onPressSignIn}
-            style={[styles.signinText, {color: Colors.green, textDecorationLine: 'underline'}]}>
+            style={[
+              styles.signinText,
+              {color: Colors.green, textDecorationLine: 'underline'},
+            ]}>
             {' ' + strings.sign_in}
           </Text>
         </Text>
@@ -201,9 +274,9 @@ const styles = StyleSheet.create({
     height: height / 5,
   },
   container: {
-    padding: 20,
-    height: height,
+    paddingBottom: 40,
     alignItems: 'center',
+    paddingHorizontal: 20,
     backgroundColor: Colors.white,
   },
   login_background: {
@@ -233,7 +306,6 @@ const styles = StyleSheet.create({
   },
   signinText: {
     fontSize: 14,
-    marginTop: vh(65),
     color: Colors.grey,
   },
   icon: {

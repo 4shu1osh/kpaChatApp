@@ -109,13 +109,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   txt: {
-    left: vw(40),
-    bottom: vh(22),
     fontSize: 12,
+    left: vw(44),
+    bottom: vh(22),
     color: colors.green,
     alignSelf: 'center',
-    position: 'absolute',
     paddingHorizontal: 3,
+    position: 'absolute',
     backgroundColor: colors.white,
   },
   rightComponent: {

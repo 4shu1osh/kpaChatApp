@@ -1,8 +1,3 @@
-import React from 'react';
-import images from '../../utils/localImages';
-import routes from '../../routes/routeNames';
-import {vh, vw} from '../../utils/dimensions';
-import {CommonActions, useNavigation} from '@react-navigation/native';
 import {
   Text,
   View,
@@ -11,7 +6,13 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
+import React from 'react';
 import Colors from '../../utils/colors';
+import images from '../../utils/localImages';
+import routes from '../../routes/routeNames';
+import {vh, vw} from '../../utils/dimensions';
+import { getUserDataAsync } from '../../utils/storage';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 
 const {width} = Dimensions.get('screen');
 
@@ -25,13 +26,24 @@ const SplashScreen = () => {
       duration: 2000,
       useNativeDriver: false,
     }).start();
-    setTimeout(() => {
+    setTimeout(async () => {
+      const data =  await getUserDataAsync();
+      if (data) {
       navigation.dispatch(
         CommonActions.reset({
           index: 1,
-          routes: [{name: routes.login}],
+          routes: [{name: routes.chatStack}],
         }),
       );
+      }
+      else {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: routes.authStack}],
+          }),
+        );
+      }
     }, 3500);
   }, [fadeAnim]);
 

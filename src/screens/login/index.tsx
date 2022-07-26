@@ -6,22 +6,24 @@ import {
   Dimensions,
   ToastAndroid,
 } from 'react-native';
+import {
+  validateEmail,
+  validatePhone,
+  validatePassword,
+} from '../../utils/validation';
 import React from 'react';
 import Colors from '../../utils/colors';
 import routes from '../../routes/routeNames';
 import images from '../../utils/localImages';
 import {vh, vw} from '../../utils/dimensions';
 import CustomButton from '../../components/button';
-import {useNavigation} from '@react-navigation/native';
+import {setUserDataAsync} from '../../utils/storage';
 import {strings, toUpperCase} from '../../utils/common';
+import commonFunction from '../../utils/commonFunction';
 import CustomTextInput from '../../components/textInput';
-import TouchableImage from '../../components/touchableImage';
-import {
-  validateEmail,
-  validatePhone,
-  validatePassword,
-} from '../../utils/validation';
 import ScreenHeading from '../../components/screenHeading';
+import TouchableImage from '../../components/touchableImage';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const {width, height} = Dimensions.get('screen');
@@ -94,6 +96,24 @@ const Login = () => {
     } else if (passwordError.length > 20) {
       showToast(strings.password_max_length);
       return;
+    } else {
+      commonFunction.signInWithEmail(
+        email,
+        password,
+        (success: any) => {
+          console.log("sign in success ", success)
+          setUserDataAsync({uid : success?.user?._user?.uid, email: success?.user?._user?.email});
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: routes.chatStack}],
+            }),
+          )
+        },
+        (error: any) => {
+          console.log("sign in error ", error)
+        }
+      )
     }
   };
 
@@ -104,7 +124,11 @@ const Login = () => {
   return (
     <View style={styles.parent}>
       <ScreenHeading heading={toUpperCase(strings.welcome)} />
-      <KeyboardAwareScrollView bounces={false} bouncesZoom={false} extraScrollHeight={80} contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView 
+      extraScrollHeight={80} 
+      enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.container}>
         <Image
           source={images.loginbg}
           style={styles.background}
@@ -144,7 +168,7 @@ const Login = () => {
           {passwordError && <Text style={styles.error}>{passwordError}</Text>}
         </View>
         <CustomButton
-          widthPercent={'24%'}
+          widthPercent={'94%'}
           buttonHandler={buttonHandler}
           label={toUpperCase(strings.sign_in)}
         />
@@ -174,7 +198,7 @@ const styles = StyleSheet.create({
     height: height / 3,
   },
   container: {
-    height: height,
+    paddingBottom: 40,
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: Colors.white,
@@ -216,7 +240,7 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 14,
-    marginTop: vh(68),
+    marginTop: vh(80),
     color: Colors.grey,
   },
   icon: {
