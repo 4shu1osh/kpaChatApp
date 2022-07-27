@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     height: vh(60),
     borderRadius: 6,
     alignItems: 'center',
-    marginVertical: vh(26),
+    marginVertical: vh(30),
     justifyContent: 'center',
     backgroundColor: Colors.green,
   },

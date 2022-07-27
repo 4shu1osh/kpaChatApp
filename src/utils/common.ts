@@ -21,6 +21,7 @@ const strings = {
   password_not_match: 'Passwords don\'t match',
   enter_phone_email: "Phone/email can't be empty",
   invalid_phone: 'Phone number must be 10 digits',
+  update_profile_picture: 'Update profile picture',
   already_have_account: 'Already have an account?',
   password_no_space: "Password can't contain spaces",
   login_text: 'Sign In Using Your  Mobile Number / Email',

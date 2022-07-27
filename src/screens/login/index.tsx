@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import {
   validateEmail,
@@ -36,6 +37,7 @@ const Login = () => {
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [toggle, setToggle] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [password, setPassword] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
@@ -97,23 +99,30 @@ const Login = () => {
       showToast(strings.password_max_length);
       return;
     } else {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
       commonFunction.signInWithEmail(
         email,
         password,
         (success: any) => {
-          console.log("sign in success ", success)
-          setUserDataAsync({uid : success?.user?._user?.uid, email: success?.user?._user?.email});
+          console.log('sign in success ', success);
+          setUserDataAsync({
+            uid: success?.user?._user?.uid,
+            email: success?.user?._user?.email,
+          });
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
               routes: [{name: routes.chatStack}],
             }),
-          )
+          );
         },
         (error: any) => {
-          console.log("sign in error ", error)
-        }
-      )
+          console.log('sign in error ', error);
+        },
+      );
     }
   };
 
@@ -124,11 +133,11 @@ const Login = () => {
   return (
     <View style={styles.parent}>
       <ScreenHeading heading={toUpperCase(strings.welcome)} />
-      <KeyboardAwareScrollView 
-      extraScrollHeight={80} 
-      enableOnAndroid={true}
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView
+        extraScrollHeight={80}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.container}>
         <Image
           source={images.loginbg}
           style={styles.background}
@@ -136,14 +145,12 @@ const Login = () => {
         />
         <View style={styles.header}>
           <CustomTextInput
-            maxLength = {phone?.length > 0 ? 10 : null}
+            maxLength={phone?.length > 0 ? 10 : null}
             inputCallback={inputCallback}
             placeholder={strings.email_phone}
             right={
               <Image
-                source={
-                  phone ? images.dialpad : email ? images.email : null
-                }
+                source={phone ? images.dialpad : email ? images.email : null}
                 style={styles.icon}
                 resizeMode="contain"
               />
@@ -167,16 +174,25 @@ const Login = () => {
           />
           {passwordError && <Text style={styles.error}>{passwordError}</Text>}
         </View>
-        <CustomButton
-          widthPercent={'94%'}
-          buttonHandler={buttonHandler}
-          label={toUpperCase(strings.sign_in)}
-        />
+        {loading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color={Colors.white}  />
+        </View>
+        ) : (
+          <CustomButton
+            widthPercent={'94%'}
+            buttonHandler={buttonHandler}
+            label={toUpperCase(strings.sign_in)}
+          />
+        )}
         <Text style={styles.signUpText}>
           {strings.dont_have_account}
           <Text
             onPress={onPressSignUp}
-            style={[styles.signUpText, {color: Colors.green, textDecorationLine: 'underline'}]}>
+            style={[
+              styles.signUpText,
+              {color: Colors.green, textDecorationLine: 'underline'},
+            ]}>
             {' ' + strings.sign_up}
           </Text>
         </Text>
@@ -247,4 +263,13 @@ const styles = StyleSheet.create({
     width: vw(20),
     height: vh(20),
   },
+  loader: {
+    width: '94%',
+    height: vh(60),
+    borderRadius: 6,
+    alignItems: 'center',
+    marginVertical: vh(26),
+    justifyContent: 'center',
+    backgroundColor: Colors.green,
+  }
 });

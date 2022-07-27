@@ -13,6 +13,7 @@ import com.kpachatapp.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import com.BV.LinearGradient.LinearGradientPackage;
 import java.util.List;
+import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
