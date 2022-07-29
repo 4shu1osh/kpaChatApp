@@ -6,6 +6,8 @@ import Inbox from '../screens/inbox';
 import Colors from '../utils/colors';
 import {StatusBar} from 'react-native';
 import Signup from '../screens/signup';
+import Profile from '../screens/profile';
+import ImageView from '../screens/imageView';
 import SplashScreen from '../screens/splashscreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -27,6 +29,9 @@ export default function Routes() {
         <Stack.Screen name={routes.splash} component={SplashScreen} />
         <Stack.Screen name={routes.authStack} component={AuthStack} />
         <Stack.Screen name={routes.chatStack} component={ChatStack} />
+        <Stack.Screen name={routes.profile} component={Profile} />
+        <Stack.Screen name={routes.imageView} component={ImageView} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -55,3 +60,4 @@ function ChatStack() {
     </Stack.Navigator>
   );
 }
+

@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     color: Colors.white,
+    textTransform: 'uppercase'
   },
   button: {
     width: '94%',

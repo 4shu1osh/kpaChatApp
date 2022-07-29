@@ -180,7 +180,6 @@ const Login = () => {
         </View>
         ) : (
           <CustomButton
-            widthPercent={'94%'}
             buttonHandler={buttonHandler}
             label={toUpperCase(strings.sign_in)}
           />
@@ -193,7 +192,7 @@ const Login = () => {
               styles.signUpText,
               {color: Colors.green, textDecorationLine: 'underline'},
             ]}>
-            {' ' + strings.sign_up}
+            {` ${strings.sign_up}`}
           </Text>
         </Text>
       </KeyboardAwareScrollView>
@@ -268,7 +267,7 @@ const styles = StyleSheet.create({
     height: vh(60),
     borderRadius: 6,
     alignItems: 'center',
-    marginVertical: vh(26),
+    marginVertical: vh(30),
     justifyContent: 'center',
     backgroundColor: Colors.green,
   }

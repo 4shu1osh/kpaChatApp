@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import Colors from '../../utils/colors';
@@ -26,7 +27,7 @@ import {
 import ScreenHeading from '../../components/screenHeading';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import commonFunction from '../../utils/commonFunction';
-import { setUserDataAsync } from '../../utils/storage';
+import {setUserDataAsync} from '../../utils/storage';
 
 const {width, height} = Dimensions.get('screen');
 const showToast = (msg: string) => {
@@ -41,6 +42,7 @@ const Signup = () => {
   const [toggle2, setToggle2] = React.useState(true);
   const [fullName, setFullName] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const [nameError, setNameError] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
@@ -98,8 +100,7 @@ const Signup = () => {
     if (validateConfirmPassword(text, password)) {
       setConfirmPasswordError('');
     }
-
-  }
+  };
 
   const toggleBtn1 = () => {
     setToggle1(!toggle1);
@@ -107,7 +108,7 @@ const Signup = () => {
 
   const toggleBtn2 = () => {
     setToggle2(!toggle2);
-  }
+  };
 
   const buttonHandler = () => {
     if (!fullName) {
@@ -131,18 +132,27 @@ const Signup = () => {
     } else if (password.includes(' ')) {
       showToast(strings.password_no_space);
       return;
-    }  else if (password.length > 20) {
+    } else if (password.length > 20) {
       showToast(strings.password_max_length);
       return;
     } else if (!validateConfirmPassword(password, confirmPassword)) {
       showToast(strings.password_not_match);
     } else {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
       commonFunction.createUserWithEmail(
         email,
         password,
-        (success : any) => {
-          console.log("success",success)
-          setUserDataAsync({uid : success?.user?._user?.uid, email: success?.user?._user?.email});
+        (success: any) => {
+          console.log('success', success);
+          setUserDataAsync({
+            phone: phone,
+            name: fullName,
+            uid: success?.user?._user?.uid,
+            email: success?.user?._user?.email,
+          });
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
@@ -150,11 +160,10 @@ const Signup = () => {
             }),
           );
         },
-        (error : any) => {
-          console.log("error",error)
-        }
-  
-      )
+        (error: any) => {
+          console.log('error', error);
+        },
+      );
     }
   };
 
@@ -209,10 +218,10 @@ const Signup = () => {
             inputCallback={passwordCallback}
             right={
               <TouchableImage
-              style={styles.icon}
-              resizeMode="contain"
-              onPress={toggleBtn1}
-              source={toggle1 ? images.eye_close : images.eye_open}
+                style={styles.icon}
+                resizeMode="contain"
+                onPress={toggleBtn1}
+                source={toggle1 ? images.eye_close : images.eye_open}
               />
             }
           />
@@ -227,24 +236,27 @@ const Signup = () => {
             inputCallback={confirmPasswordCallback}
             right={
               <TouchableImage
-              style={styles.icon}
-              resizeMode="contain"
-              onPress={toggleBtn2}
-              source={toggle2 ? images.eye_close : images.eye_open}
+                style={styles.icon}
+                resizeMode="contain"
+                onPress={toggleBtn2}
+                source={toggle2 ? images.eye_close : images.eye_open}
               />
             }
           />
-          {confirmPasswordError ? (
+          {confirmPasswordError && (
             <Text style={styles.error}>{confirmPasswordError}</Text>
-          ) : (
-            <Text style={styles.error}>{}</Text>
           )}
         </View>
-        <CustomButton
-          widthPercent={'24%'}
-          buttonHandler={buttonHandler}
-          label={toUpperCase(strings.sign_up)}
-        />
+        {loading ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color={Colors.white} />
+          </View>
+        ) : (
+          <CustomButton
+            buttonHandler={buttonHandler}
+            label={toUpperCase(strings.sign_up)}
+          />
+        )}
         <Text style={styles.signinText}>
           {strings.already_have_account}
           <Text
@@ -311,5 +323,14 @@ const styles = StyleSheet.create({
   icon: {
     width: vw(20),
     height: vh(20),
+  },
+  loader: {
+    width: '94%',
+    height: vh(60),
+    borderRadius: 6,
+    alignItems: 'center',
+    marginVertical: vh(30),
+    justifyContent: 'center',
+    backgroundColor: Colors.green,
   },
 });

@@ -1,6 +1,8 @@
 import React from 'react';
 import Colors from '../../utils/colors';
+import { vh } from '../../utils/dimensions';
 import routes from '../../routes/routeNames';
+import CustomModal from '../../components/modal';
 import CustomButton from '../../components/button';
 import storage from '@react-native-firebase/storage';
 import commonFunction from '../../utils/commonFunction';
@@ -10,20 +12,41 @@ import imagePickerFunction from '../../utils/imagePicker';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import {getUserDataAsync, removeUserDataAsync} from '../../utils/storage';
-import { vh } from '../../utils/dimensions';
-
 const Home = () => {
   const [userData, setUserData] = React.useState({
-    uid: '',
-    email: '',
     dp: '',
+    uid: '',
+    name: '',
+    email: '',
+    phone: '',
   });
+
+  React.useEffect(() => {
+    getUserDataAsync().then(data => {
+      setUserData(data);
+      firestore()
+        .collection('Users')
+        .doc(data.uid)
+        .set({
+          dp: '',
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+        })
+        .then(() => {
+          console.log('User added!');
+        });
+    });
+  }, []);
+  
   const navigation = useNavigation<any>();
+
   const [img, setImg] = React.useState();
   const [url, setUrl] = React.useState('');
   const [isUploaded, setIsUploaded] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
   const [currTime, setCurrTime] = React.useState(new Date().getTime());
+  
 
   const imgCallback = (imgPath: any) => {
   setUploading(true);
@@ -65,22 +88,6 @@ const Home = () => {
     });
   }, [url])
 
-  React.useEffect(() => {
-    getUserDataAsync().then(data => {
-      setUserData(data);
-      firestore()
-        .collection('Users')
-        .doc(data.uid)
-        .set({
-          email: data.email,
-          id: data.uid,
-          dp: ''
-        })
-        .then(() => {
-          console.log('User added!');
-        });
-    });
-  }, []);
 
   const buttonHandler1 = () => {
     firestore()
@@ -132,7 +139,12 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <Text>{isUploaded}</Text>
+      <CustomButton
+      label={strings.edit_profile}
+       buttonHandler ={()=> {
+        navigation.navigate(routes.profile);
+      }}/>
+      {/* <Text>{isUploaded}</Text>
       <Text style={styles.item}>{userData?.uid}</Text>
       <Text style={styles.item}>{userData?.email}</Text>
       <CustomButton
@@ -146,7 +158,7 @@ const Home = () => {
       </View>
       :
       <CustomButton
-      label={toUpperCase(strings.update_profile_picture)}
+      label={toUpperCase(strings.upload_profile_picture)}
       buttonHandler={buttonHandler4}
     />
       }
@@ -158,7 +170,7 @@ const Home = () => {
       <CustomButton
         label={toUpperCase(strings.sign_out)}
         buttonHandler={buttonHandler2}
-      />
+      /> */}
     </View>
   );
 };
@@ -167,24 +179,23 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    backgroundColor: Colors.white,
-    alignItems: 'center',
     justifyContent: 'center',
   },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-    color: Colors.black,
-  },
-  loader: {
-    width: '94%',
-    height: vh(60),
-    borderRadius: 6,
-    alignItems: 'center',
-    marginVertical: vh(26),
-    justifyContent: 'center',
-    backgroundColor: Colors.green,
-  }
+  // item: {
+  //   padding: 10,
+  //   fontSize: 18,
+  //   height: 44,
+  //   color: Colors.black,
+  // },
+  // loader: {
+  //   width: '94%',
+  //   height: vh(60),
+  //   borderRadius: 6,
+  //   alignItems: 'center',
+  //   marginBottom: vh(30),
+  //   justifyContent: 'center',
+  //   backgroundColor: Colors.green,
+  // }
 });
