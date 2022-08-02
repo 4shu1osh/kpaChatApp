@@ -1,6 +1,7 @@
 const images = {
   edit: require('../assets/images/pencil.png'),
   email: require('../assets/images/email.png'),
+  cancel: require('../assets/images/cancel.png'),
   camera: require('../assets/images/camera.png'),
   signup: require('../assets/images/signup.png'),
   person: require('../assets/images/person.png'),

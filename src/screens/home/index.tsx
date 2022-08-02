@@ -11,7 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import imagePickerFunction from '../../utils/imagePicker';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
-import {getUserDataAsync, removeUserDataAsync} from '../../utils/storage';
+import {getUserDataAsync, removeUserDataAsync, setUserDataAsync} from '../../utils/storage';
 const Home = () => {
   const [userData, setUserData] = React.useState({
     dp: '',
@@ -22,21 +22,22 @@ const Home = () => {
   });
 
   React.useEffect(() => {
-    getUserDataAsync().then(data => {
-      setUserData(data);
-      firestore()
-        .collection('Users')
-        .doc(data.uid)
-        .set({
-          dp: '',
-          name: data.name,
-          phone: data.phone,
-          email: data.email,
-        })
-        .then(() => {
-          console.log('User added!');
-        });
-    });
+    // getUserDataAsync().then(data => {
+    //   setUserData(data);
+    //   firestore()
+    //     .collection('Users')
+    //     .doc(data.uid)
+    //     .set({
+    //       dp: '',
+    //       name: data.name,
+    //       phone: data.phone,
+    //       email: data.email,
+    //     })
+    //     .then(() => {
+    //       setUserDataAsync(data);
+    //       console.log('User added!');
+    //     });
+    // });
   }, []);
   
   const navigation = useNavigation<any>();
@@ -139,38 +140,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <CustomButton
-      label={strings.edit_profile}
-       buttonHandler ={()=> {
-        navigation.navigate(routes.profile);
-      }}/>
-      {/* <Text>{isUploaded}</Text>
-      <Text style={styles.item}>{userData?.uid}</Text>
-      <Text style={styles.item}>{userData?.email}</Text>
-      <CustomButton
-        label={toUpperCase(strings.update_email)}
-        buttonHandler={buttonHandler1}
-      />
-      {
-        uploading ?
-        <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.white}  />
-      </View>
-      :
-      <CustomButton
-      label={toUpperCase(strings.upload_profile_picture)}
-      buttonHandler={buttonHandler4}
-    />
-      }
-     
-      <CustomButton
-        label={toUpperCase(strings.delete_user)}
-        buttonHandler={buttonHandler3}
-      />
-      <CustomButton
-        label={toUpperCase(strings.sign_out)}
-        buttonHandler={buttonHandler2}
-      /> */}
+      
     </View>
   );
 };

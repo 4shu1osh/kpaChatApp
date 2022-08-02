@@ -10,30 +10,31 @@ import {
 } from 'react-native';
 import React from 'react';
 import Colors from '../../utils/colors';
-import {strings} from '../../utils/common';
+import {strings, toLowerCase} from '../../utils/common';
 import images from '../../utils/localImages';
 import routes from '../../routes/routeNames';
 import {vh, vw} from '../../utils/dimensions';
 import storage from '@react-native-firebase/storage';
-import {getUserDataAsync} from '../../utils/storage';
-import {useNavigation} from '@react-navigation/native';
+import {getUserDataAsync, removeUserDataAsync, setUserDataAsync} from '../../utils/storage';
+import {useNavigation, CommonActions} from '@react-navigation/native';
+import commonFunction from '../../utils/commonFunction';
 import firestore from '@react-native-firebase/firestore';
+import ProfileField from '../../components/profileField';
 import imagePickerFunction from '../../utils/imagePicker';
 import LinearGradient from 'react-native-linear-gradient';
 import TouchableImage from '../../components/touchableImage';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import ProfileField from '../../components/profileField';
-import commonFunction from '../../utils/commonFunction';
 
 const {width} = Dimensions.get('screen');
 
 const Profile = () => {
   const [url, setUrl] = React.useState('');
-  const [firestoreData, setFirestoreData] = React.useState<any>();
   const [profilePic, setProfilePic] = React.useState();
   const [userData, setUserData] = React.useState<any>();
   const [uploading, setUploading] = React.useState(false);
   const [settings, setSettings] = React.useState<any>(false);
+  const [dataUpdated, setDataUpdated] = React.useState(false);
+  const [firestoreData, setFirestoreData] = React.useState<any>();
   const [currTime, setCurrTime] = React.useState(new Date().getTime());
 
   const navigation = useNavigation<any>();
@@ -41,9 +42,42 @@ const Profile = () => {
   React.useEffect(() => {
     getUserDataAsync().then(data => {
       setUserData(data);
-      getFireStoreData(data.uid)
     });
-  }, [profilePic, url]);
+  }, []);
+
+  React.useEffect(() => {
+    getUserDataAsync().then(data => {
+      setUserData(data);
+      firestore()
+        .collection('Users')
+        .doc(data.uid)
+        .get()
+        .then((doc: any) => {
+          if (doc.data()) {
+            setUserDataAsync(doc.data());
+            setFirestoreData(doc.data());
+            setUserData(doc.data());
+          }
+        });
+    });
+  }, [dataUpdated]);
+
+  React.useEffect(() => {
+    console.log('reschedddd');
+    getFireStoreData(userData?.uid);
+  }, [url, profilePic]);
+
+  const updateField = (field: string, value: string) => {
+    console.log("rechd")
+    firestore()
+      .collection('Users')
+      .doc(userData?.uid)
+      .update({
+      [toLowerCase(field)]: value,
+    });
+    ToastAndroid.show(`${field} Updated Successfully`, ToastAndroid.SHORT);
+    setDataUpdated(!dataUpdated);
+  };
 
   const showSettings = () => {
     setSettings(!settings);
@@ -51,7 +85,7 @@ const Profile = () => {
 
   const showImage = () => {
     navigation.navigate(routes.imageView, {
-      image: profilePic,
+      image: userData.dp,
     });
   };
 
@@ -62,15 +96,21 @@ const Profile = () => {
       .get()
       .then(doc => {
         setFirestoreData(doc.data());
-        console.log(doc.data());
+        console.log('>>>>', doc.data());
       });
-  }
+  };
 
   const logoutUser = () => {
+    removeUserDataAsync();
     commonFunction.logOut(
       () => {
-        navigation.navigate(routes.authStack);
         ToastAndroid.show(strings.logged_out, ToastAndroid.SHORT);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: routes.authStack}],
+          }),
+        );
       },
       (error: string) => {
         ToastAndroid.show(error, ToastAndroid.SHORT);
@@ -79,13 +119,19 @@ const Profile = () => {
   };
 
   const deleteUser = () => {
+    removeUserDataAsync();
     firestore()
       .collection('Users')
       .doc(userData?.uid)
       .delete()
       .then(() => {
         ToastAndroid.show(strings.user_deleted, ToastAndroid.SHORT);
-        navigation.navigate(routes.authStack);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: routes.authStack}],
+          }),
+        );
       })
       .catch(error => {
         ToastAndroid.show(strings.error, ToastAndroid.SHORT);
@@ -116,6 +162,7 @@ const Profile = () => {
   };
 
   const uploadImg = async (imgPath: any) => {
+
     setUploading(true);
     setProfilePic(imgPath);
     console.log('userdata', userData);
@@ -140,8 +187,11 @@ const Profile = () => {
         <LinearGradient
           colors={[Colors.teal_green, Colors.green, Colors.blue]}
           style={styles.linearGradient}>
-          <TouchableOpacity activeOpacity={0.8} onPress={showSettings} style={styles.settings}>
-            <Image source={images.settings} style={styles.settingsIcon} />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={showSettings}
+            style={styles.settings}>
+            <Image source={settings ? images.cancel : images.settings} style={styles.settingsIcon} />
           </TouchableOpacity>
           {settings && (
             <View style={styles.settingsContainer}>
@@ -157,23 +207,19 @@ const Profile = () => {
             </View>
           )}
           <TouchableOpacity onPress={showImage} style={styles.imgBg}>
-            {firestoreData?.dp ? (
+            {profilePic ? (
               <Image
                 resizeMode={'cover'}
-                source={{uri: firestoreData?.dp }}
+                source={{uri: profilePic}}
                 style={uploading ? [styles.img, {opacity: 0.6}] : styles.img}
               />
-            ) : 
-            // profilePic ? 
-            // (
-            //   <Image
-            //     resizeMode={'cover'}
-            //     source={{uri: profilePic }}
-            //     style={uploading ? [styles.img, {opacity: 0.6}] : styles.img}
-            //   />
-            // )
-            // :
-            (
+            ) : firestoreData?.dp ? (
+              <Image
+                resizeMode={'cover'}
+                source={{uri: firestoreData?.dp}}
+                style={uploading ? [styles.img, {opacity: 0.6}] : styles.img}
+              />
+            ) : (
               <Image
                 style={styles.img}
                 resizeMode={'cover'}
@@ -183,34 +229,36 @@ const Profile = () => {
             {uploading && (
               <ActivityIndicator size="large" color={Colors.green} />
             )}
-
-            <View style={styles.iconContainer}>
-              <TouchableImage
-                onPress={setImage}
+              <TouchableOpacity style={styles.iconContainer} onPress={setImage}>
+              <Image
                 style={styles.icon}
                 source={images.camera}
                 resizeMode={'contain'}
               />
-            </View>
+              </TouchableOpacity>
           </TouchableOpacity>
         </LinearGradient>
         <ProfileField
+          callBack={updateField}
           fieldName={strings.name}
           fieldIcon={images.person}
           fieldValue={userData?.name ? userData?.name : strings.add_name}
         />
 
         <ProfileField
+          callBack={updateField}
           fieldIcon={images.email}
           fieldName={strings.email}
           fieldValue={userData?.email ? userData?.email : strings.add_email}
         />
         <ProfileField
+          callBack={updateField}
           fieldIcon={images.dialpad}
-          fieldName={strings.phone_number}
+          fieldName={strings.phone}
           fieldValue={userData?.phone ? userData?.phone : strings.add_phone}
         />
         <ProfileField
+          callBack={updateField}
           fieldName={strings.bio}
           fieldIcon={images.documents}
           fieldValue={userData?.bio ? userData?.bio : strings.bio_placeholder}
@@ -266,6 +314,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 46,
     height: 46,
+    padding: 20,
     borderWidth: 2,
     borderRadius: 50,
     alignItems: 'center',
@@ -340,7 +389,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
-    borderRadius:10,
+    borderRadius: 10,
     backgroundColor: Colors.white,
   },
   settingsText: {
@@ -352,5 +401,5 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 10,
     backgroundColor: Colors.grey,
-  }
+  },
 });

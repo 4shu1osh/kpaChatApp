@@ -4,17 +4,18 @@ import CustomButton from '../button';
 import Colors from '../../utils/colors';
 import {strings} from '../../utils/common';
 import images from '../../utils/localImages';
+import { screenHeight, screenWidth } from '../../utils/dimensions';
 
 const CustomModal = (props: any) => {
-  const {visibleValue, buttonHandler} = props;
+  const {showModal, buttonHandler} = props;
 
-  const [visible, setVisible] = React.useState(visibleValue);
+  const [visible, setVisible] = React.useState(showModal);
 
   const hideModal = () => setVisible(false);
 
   return (
-   
-    <Modal visible={visible} onDismiss={hideModal}>
+    <Modal transparent={true} visible={visible} onDismiss={hideModal}>
+      <View style={styles.modal}>
       <View style={styles.rectangle}>
         <Image source={images.edit} style={styles.icon} />
         <Text style={[styles.text, {fontSize: 18, fontWeight: '900'}]}>
@@ -27,6 +28,7 @@ const CustomModal = (props: any) => {
             label={strings.edit_profile}
           />
         </View>
+      </View>
       </View>
     </Modal>
   );
@@ -46,19 +48,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   rectangle: {
-    top: 200,
     width: '90%',
-    borderWidth: 1,
     borderRadius: 20,
     alignSelf: 'center',
-    borderColor: Colors.green,
-    backgroundColor:Colors.white,
+    backgroundColor: Colors.white,
   },
   icon: {
     width: 30,
     height: 30,
     marginVertical: 20,
     alignSelf: 'center',
+  },
+  modal: {
+    width: screenWidth,
+    height: screenHeight,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   
 });

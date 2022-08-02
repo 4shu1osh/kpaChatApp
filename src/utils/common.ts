@@ -2,7 +2,11 @@ const strings = {
   bio: 'Bio',
   next: 'next',
   name: 'Name',
+  save: 'Save',
   email: 'Email',
+  phone: 'Phone',
+  cancel: 'Cancel',
+  profile: 'Profile',
   sign_in: 'Sign in',
   sign_up: 'Sign up',
   welcome: 'Welcome',
@@ -58,4 +62,8 @@ const toUpperCase = (str: string) => {
   return str.toUpperCase();
 };
 
-export {strings, toUpperCase};
+const toLowerCase = (str: string) => {
+  return str.toLowerCase();
+}
+
+export {strings, toUpperCase, toLowerCase};

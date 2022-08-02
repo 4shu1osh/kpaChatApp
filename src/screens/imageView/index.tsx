@@ -2,12 +2,14 @@ import React from 'react';
 import Colors from '../../utils/colors';
 import routes from '../../routes/routeNames';
 import images from '../../utils/localImages';
-import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Image, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import TouchableImage from '../../components/touchableImage';
+import {screenWidth} from '../../utils/dimensions';
+import {strings} from '../../utils/common';
 
 const ImageView = ({route}: any) => {
-  const image1 = route.params.image;
+  const {image} = route.params;
   const navigation = useNavigation<any>();
   return (
     <View style={styles.container}>
@@ -18,10 +20,11 @@ const ImageView = ({route}: any) => {
           console.warn('call');
           navigation.goBack();
         }}>
-        <Image source={images.back_arrow} style={styles.back} />
+          <Image source={images.back_arrow} style={styles.back} />
+          <Text style={{color: Colors.white, fontSize: 20, fontWeight: '800', marginLeft: 10, bottom: 2}}>{strings.profile} </Text>
       </TouchableOpacity>
       <View style={{justifyContent: 'center', flex: 1}}>
-        <Image source={{uri: image1}} style={styles.image} />
+        <Image source={{uri: image}} style={styles.image} />
       </View>
     </View>
   );
@@ -35,20 +38,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
   },
   image: {
-    width: 300,
-    height: 300,
+    width: screenWidth,
+    height: screenWidth,
     alignSelf: 'center',
     resizeMode: 'contain',
   },
   closeImg: {
-    width: 20,
+    width: 200,
     height: 20,
     marginTop: 50,
     marginLeft: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   back: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
+    padding: 20,
     resizeMode: 'contain',
   },
 });

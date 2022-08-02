@@ -14,7 +14,7 @@ import TouchableImage from '../touchableImage';
 import EditField from '../modal/editField';
 
 const {width} = Dimensions.get('screen');
-const ProfileField = ({fieldIcon, fieldName, fieldValue}: any) => {
+const ProfileField = ({fieldIcon, fieldName, fieldValue, callBack}: any) => {
   const [editField, setEditField] = React.useState(false);
   return (
     <View style={styles.infoContainer}>
@@ -35,7 +35,7 @@ const ProfileField = ({fieldIcon, fieldName, fieldValue}: any) => {
         </Text>
         <View style={styles.line} />
       </View>
-      {editField && <EditField setEditField={setEditField} />}
+      {editField && <EditField fieldName={fieldName} setEditField={setEditField} callBack={callBack}/>}
     </View>
   );
 };

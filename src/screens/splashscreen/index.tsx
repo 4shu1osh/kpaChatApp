@@ -32,7 +32,7 @@ const SplashScreen = () => {
       navigation.dispatch(
         CommonActions.reset({
           index: 1,
-          routes: [{name: routes.chatStack}],
+          routes: [{name: routes.profile}],
         }),
       );
       }

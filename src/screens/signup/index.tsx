@@ -13,10 +13,11 @@ import routes from '../../routes/routeNames';
 import images from '../../utils/localImages';
 import {vh, vw} from '../../utils/dimensions';
 import CustomButton from '../../components/button';
-import {CommonActions, useNavigation} from '@react-navigation/native';
 import {strings, toUpperCase} from '../../utils/common';
 import CustomTextInput from '../../components/textInput';
+import firestore from '@react-native-firebase/firestore';
 import TouchableImage from '../../components/touchableImage';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 import {
   validateName,
   validateEmail,
@@ -28,6 +29,7 @@ import ScreenHeading from '../../components/screenHeading';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import commonFunction from '../../utils/commonFunction';
 import {setUserDataAsync} from '../../utils/storage';
+import CustomModal from '../../components/modal';
 
 const {width, height} = Dimensions.get('screen');
 const showToast = (msg: string) => {
@@ -46,9 +48,19 @@ const Signup = () => {
   const [nameError, setNameError] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
+  const [showModal, setShowModal] = React.useState(false);
   const [passwordError, setPasswordError] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [confirmPasswordError, setConfirmPasswordError] = React.useState('');
+
+  const naviagteToProfile = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: routes.profile}],
+      }),
+    );
+  };
 
   const inputCallback = (text: any) => {
     if (isFinite(text)) {
@@ -146,6 +158,7 @@ const Signup = () => {
         email,
         password,
         (success: any) => {
+          setShowModal(true);
           console.log('success', success);
           setUserDataAsync({
             phone: phone,
@@ -153,12 +166,18 @@ const Signup = () => {
             uid: success?.user?._user?.uid,
             email: success?.user?._user?.email,
           });
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{name: routes.chatStack}],
-            }),
-          );
+          firestore()
+            .collection('Users')
+            .doc(success?.user?._user?.uid)
+            .set({
+              name: fullName,
+              uid: success?.user?._user?.uid,
+              email: success?.user?._user?.email,
+            })
+            .then(() => {
+              console.log('User added!');
+            });
+          setShowModal(true);
         },
         (error: any) => {
           console.log('error', error);
@@ -269,6 +288,7 @@ const Signup = () => {
           </Text>
         </Text>
       </KeyboardAwareScrollView>
+        <CustomModal showModal={showModal} buttonHandler={naviagteToProfile} />
     </View>
   );
 };

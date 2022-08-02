@@ -8,31 +8,46 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Colors from '../../utils/colors';
+import {strings} from '../../utils/common';
 import {screenWidth} from '../../utils/dimensions';
 
-const EditField = ({setEditField}: any) => {
+const EditField = ({fieldName, setEditField, callBack}: any) => {
+  const [value, setValue] = React.useState('');
+
+  const _onChangeText = (text: string) => {
+    setValue(text);
+  };
+
+  const onPressSave = () => {
+    setEditField(false);
+    callBack(fieldName, value);
+  };
+
   return (
     <Modal transparent={true} animationType="slide">
       <View style={{flex: 1, flexDirection: 'column-reverse'}}>
         <View style={styles.modal}>
-          <Text style={styles.text}>Edit Field</Text>
+          <Text style={styles.text}>{`Edit  ${fieldName}`}</Text>
           <TextInput
             autoFocus={true}
             style={styles.input}
             keyboardAppearance="light"
-            keyboardType="ascii-capable"
+            keyboardType={
+              fieldName === strings.phone
+                ? 'number-pad'
+                : 'ascii-capable'
+            }
+            onChangeText={_onChangeText}
             placeholderTextColor={Colors.black}
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               onPress={() => setEditField(false)}
               style={styles.button}>
-              <Text style={styles.text}>Cancel</Text>
+              <Text style={styles.text}>{strings.cancel}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setEditField(false)}
-              style={styles.button}>
-              <Text style={styles.text}>Save</Text>
+            <TouchableOpacity style={styles.button} onPress={onPressSave}>
+              <Text style={styles.text}>{strings.save}</Text>
             </TouchableOpacity>
           </View>
         </View>
